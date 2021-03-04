@@ -1,0 +1,52 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div class='row'>
+        <div class="col-md-5">
+            <div style="text-align: center;color: azure;font-size: 30px;font-weight: 500;margin-bottom: 20px;margin-top: 30px;">
+                Signals on the way to the destination
+            </div>
+        <table class="table table-striped table-hover table-bordered table-sm bg-white">
+            <thead>
+            <tr>
+                <td>ID</td>
+                <td>Signal Name</td>
+                
+            </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Origin</td>
+                    <td>{{origin}}</td>
+
+                </tr>
+                {%for i in range(0, length)%} 
+            <tr>
+                <td>{{signals[i][0]}}</td>
+                <td>{{l[i]}}</td>
+                
+                
+            {% endfor %}
+            <tr>
+                <td>Destination</td>
+                <td>{{dest}}</td>
+                
+            </tr>
+            </tbody>
+        </table>
+        </div>
+ 
+  <div class="col-md-7" >
+        <h1 style="margin-left: 280px;">Time analysis</h1>
+        <div id="box" style="color: blanchedalmond;">
+            <div style="padding: 10px;font-size: large;">
+            <h3 id="signal"></h3><hr/>
+            <label><b>Without our algorithm:</b></label><p id='redtime' style="font-size: 40;">1716 s</p><hr/>
+            <label><b>Using our algorithm:</b></label><p id='reduced' style="font-size: 40;">990.091 s</p><hr/>
+            <label><b>SAVED TIME :</b></label><p id='green' style="font-size: 40;">725.909 s</p>
+            <h1>42.3% time saved that was wasted in traffic jams</h1>
+            </div>
+        </div>
+    </div>
+  </div>
+
+{% endblock %}

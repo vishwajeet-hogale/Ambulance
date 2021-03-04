@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=\, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css"
+      integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA=="
+      crossorigin=""
+    />
+    <script
+      src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js"
+      integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg=="
+      crossorigin=""
+    ></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;500&display=swap" rel="stylesheet">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+      
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
+    <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css"> 
+    <style>
+      #issMap {
+        height: 400px;
+        width: 550px;
+        border: solid black 3px;
+        border-radius: 10px;
+        margin-left: 30px;
+        margin-bottom: 5px;
+        padding-left: 50px;
+        margin-top: 60px;
+      }
+      #box{
+          height:430px;
+          width:590px;
+          border:solid black 3px;
+          border-radius: 10px;
+          margin-left: 150px;
+          margin-bottom: 25px;
+      }
+    </style>
+
+    <title>Our map</title>
+    <style>
+        body{
+          background-image: linear-gradient( 109.6deg,  rgba(123,90,224,1) 11.2%, rgba(164,46,253,1) 32.6%, rgba(213,56,234,1) 62.7%, rgba(251,138,52,1) 100.2% );
+        }
+  
+  
+      </style>
+  </head>
+  <body>
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-dark border-bottom box-shadow" style="color: whitesmoke;">
+        <h5 class="my-0 mr-md-auto " style ="font-size: 40px;font-weight: 800;">Magnifier</h5>
+        <nav class="my-2 my-md-0 mr-md-3" >
+          <a class="p-2 "  href="#" style ="font-size: 20px;color: whitesmoke;">About us</a>
+          <a class="p-2 " href="#" style ="font-size: 20px;color: whitesmoke;">Contact us</a>
+          
+      </div>
+      <div class="row">
+        <div class="col-md-5" style="margin: 0 auto;">
+          {% with messages = get_flashed_messages()  %}
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert" id = "flash">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          {% endfor %}
+          {% endif %}
+          {% endwith %}
+          </div>
+          </div>
+    <div class='row'>
+        <div class="col-md-5"><div id="issMap"></div></div>
+        
+        <div class="col-md-7" >
+            <h1 style="margin-left: 280px;">Signal you're heading to </h1>
+            <div id="box" style="color: blanchedalmond;">
+                <div style="padding: 10px;font-size: large;">
+                <h3 id="signal"></h3><hr/>
+                <label><b>Red light duration before:</b></label><p id='redtime' style="font-size: 40;"></p><hr/>
+                <label><b>Reduced red light after:</b></label><p id='reduced' style="font-size: 40;">s</p><hr/>
+                <label><b>Green light at the signal so that ambulance passes:</b></label><p id='green' style="font-size: 40;">s</p>
+                </div>
+            </div>
+        </div>
+      </div>
+        <hr/>
+        <div cass='row'>
+          <div style="margin-left: 420px;margin-bottom: 50px;"><a class="btn btn-primary" href="{{url_for('getanalysis')}}" role="button">Click here to get the analysis</a></div>
+          
+        </div>
+    
+
+    <script >
+        
+        var lat ={{lat}};
+      var long = {{long}};
+      var origin = {{origin}};
+      var dest = {{dest}};
+      var latsig = {{latsig}};
+      var longsig = {{longsig}};
+      var avg_time = {{avg_time}};
+      var red_time = {{red_time}};
+      var weights = {{weights}};
+      
+      var box = document.getElementById('box');
+      async function getAdd(lat,long){
+        url="https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat="+lat+"&lon="+long
+        const response = await fetch(url);
+        const data = await response.json();
+        roadname = data['display_name']
+        
+        return roadname
+      }
+      
+      async function getISS(o_lat,o_long,d_lat,d_long) {
+        url = "https://api.tomtom.com/routing/1/calculateRoute/"+o_lat+","+o_long+":"+d_lat+","+d_long+"/json?key=mHywp1xqUaq62ROfTAuCRKtxjTYA0Zak&routeType=shortest"
+        const response = await fetch(url);
+        const data = await response.json();
+        avg = data['routes'][0]['summary']['lengthInMeters']
+        time_sec = data['routes'][0]['summary']['travelTimeInSeconds']
+        list = [avg,time_sec]
+        return list
+      }
+       
+      const mymap = L.map('issMap').setView(origin, 11);
+      const attribution =
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+
+      const tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+      const tiles = L.tileLayer(tileUrl, { attribution });
+      tiles.addTo(mymap);
+        const marker = L.marker(origin);
+        marker.addTo(mymap);
+        marker.bindPopup("Origin").openPopup();
+
+        const marker1 = L.marker(dest);
+        marker1.addTo(mymap);
+        marker1.bindPopup("Destination").openPopup();
+        var i=0;
+        console.log(long.length)
+        for(i=0;i<lat.length;i++)
+        {
+            const circle = L.circle([lat[i],long[i]] ,{
+            color: 'yellow',
+            fillColor: 'yellow',
+            fillOpacity: 0.5,
+            radius: 35
+            });
+            circle.addTo(mymap);
+        }
+        for(i=0;i<latsig.length;i++)
+        {
+            const circle1 = L.circle([latsig[i],longsig[i]] ,{
+            color: 'red',
+            fillColor: 'red',
+            fillOpacity: 0.5,
+            radius: 45
+            });
+            circle1.addTo(mymap);
+            /*const marker2 = L.marker([latsig[i],longsig[i]]);
+            marker2.addTo(mymap);
+            marker2.valueOf()._icon.style.backgroundColor = 'green'*/
+        }
+
+        const issIcon = L.icon({
+        iconUrl: '{{url_for('static',filename='images/amb.png')}}',
+        iconSize: [50, 32],
+        iconAnchor: [25, 16]
+      });
+      let marker3 = L.marker(origin, { icon: issIcon }).addTo(mymap);
+      function find_congestion_clear(avg_time,wf,o_lat,o_long,d_lat,d_long,red1){
+            j=getISS(o_lat,o_long,d_lat,d_long)
+            var p = Promise.resolve(j);
+            var stack = []
+            p.then(function(v){
+                let t = v[0]/11.11 ;
+                let red_time = Math.round(red1 - wf*red1);
+                let green_time = Math.round(wf*red1+t-red_time);
+                stack.push([red_time,green_time]);
+                bjp = getAdd(d_lat,d_long);
+                var hello = Promise.resolve(bjp);
+                
+                hello.then(function(v){
+                    
+                    document.getElementById('signal').innerHTML=v;
+                    document.getElementById('redtime').innerHTML=avg_time;
+                    document.getElementById('reduced').innerHTML=red_time;
+                    document.getElementById('green').innerHTML=green_time;
+
+                });
+                
+                console.log(red_time,green_time,t,v[0]);
+            });
+            return stack
+        }
+        //boda = find_congestion_clear(120,0.8,12.93177,77.613834,12.929563,77.615024,180)
+        //console.log(boda)
+        let yo=[]
+        //let k=0;
+        function find_the_signal(signal_lats,signal_longs,amb_lat,amb_long,x){
+            yo=[]
+            let lat_d = Math.abs(signal_lats-amb_lat);
+            let long_d = Math.abs(signal_longs - amb_long);
+            if ( lat_d < 0.005 && long_d < 0.005 && x<=latsig.length-1){
+                console.log('green')
+                yo=find_congestion_clear(avg_time[x+1],weights[x+1],latsig[x],longsig[x],latsig[x+1],longsig[x+1],red_time[x+1])
+                console.log(yo)
+                
+                return 1;
+            }
+            
+            
+        }
+        //find_the_signal(12.93177,77.613834,12.932077,77.613653)
+      var i=0,x=0;
+      a = setInterval(function() {
+                mymap.removeLayer(marker3)
+                marker3 = L.marker([lat[i],long[i]], { icon: issIcon });
+                marker3.addTo(mymap);
+                if(1==find_the_signal(latsig[x],longsig[x],lat[i],long[i],x)){
+                    const circl = L.circle([latsig[x],longsig[x]] ,{
+                    color: 'green',
+                    fillColor: 'green',
+                    fillOpacity: 0.5,
+                    radius: 40
+                    });
+                    circl.addTo(mymap);
+                    
+                    x++;
+                }
+               
+                const circle2 = L.circle([lat[i],long[i]] ,{
+                color: 'black',
+                fillColor: 'yellow',
+                fillOpacity: 0.5,
+                radius: 2
+                });
+                circle2.addTo(mymap);
+                i++;
+                    }, 300);
+            
+
+        
+    </script>
+      
+      
+      
+  </body>
+</html>

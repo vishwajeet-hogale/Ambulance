@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ambulance</title>
+    
+    <link rel="stylesheet" href="https://bootswatch.com/4/materia/bootstrap.min.css"> 
+    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> -->
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100;500&display=swap" rel="stylesheet">
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+      
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script> 
+    
+    
+    <style>
+      body{
+        background-image: linear-gradient( 109.6deg,  rgba(123,90,224,1) 11.2%, rgba(164,46,253,1) 32.6%, rgba(213,56,234,1) 62.7%, rgba(251,138,52,1) 100.2% );
+      }
+
+
+    </style>
+    
+</head>
+<body >
+
+    <div class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-dark border-bottom box-shadow" style="color: whitesmoke;">
+      <h5 class="my-0 mr-md-auto " style ="font-size: 40px;font-weight: 800;">Magnifier</h5>
+      <nav class="my-2 my-md-0 mr-md-3" >
+        <a class="p-2 "  href="#" style ="font-size: 20px;color: whitesmoke;">About us</a>
+        <a class="p-2 " href="#" style ="font-size: 20px;color: whitesmoke;">Contact us</a>
+        
+    </div>
+    <div class="row">
+      <div class="col-md-5" style="margin: 0 auto;">
+        {% with messages = get_flashed_messages()  %}
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id = "flash">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        </div>
+        </div>
+      
+      
+        {% block body %}
+        {% endblock %}
+      <script src="../static/js/flash.js"></script>
+</body>
+</html>

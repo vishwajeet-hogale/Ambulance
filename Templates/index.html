@@ -1,0 +1,69 @@
+
+<style>
+    #card {
+    margin: 0 auto;
+    margin-top: 60px; /* Added */
+    float: none; /* Added */
+    margin-bottom: 50px; /* Added */
+    width: 370px;
+    height: 670px;
+}
+#mapid{
+  height: 180px;
+  color: wheat;
+  border: solid 3px white;
+}
+</style>
+
+{% extends "layout.html" %}
+{% block body %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+   integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+   crossorigin=""/>
+   <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+   integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+   crossorigin=""></script>
+<div class="row">
+    
+</div>
+    
+        
+        <div class="card card-body" id="card">
+            <h2 style="text-align:center">Please fill this for an ambulance</h2>
+            <form action="{{url_for('formfill')}}" method="POST">
+                <div class="form-group">
+                    <input type="text" class="form-control" name="name" placeholder="Patient Name">
+                </div>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="age" placeholder="Patient Age">
+              </div>
+              <label><b>Origin:</b></label>
+                <div class="form-group">
+                  <input type="text" class="form-control" name="bname" placeholder="Building Name/Street Name">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" name="aname" placeholder="Area Name">
+              </div>
+              <label><b>Destination:</b></label>
+              <div class="form-group">
+                <input type="text" class="form-control" name="hname" placeholder="Hospital Name">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" name="haname" placeholder="Area Name">
+              </div>                
+              
+            
+              
+              <button class="btn btn-primary btn-block">
+                Book 
+              </button>
+              
+               
+            </form>
+          </div>
+   
+    <hr/>
+    
+      
+    
+{% endblock %}
